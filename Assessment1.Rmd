@@ -20,20 +20,41 @@ For more details on how to use R Markdown see [Markdown Basics](https://rmarkdow
 This document was created with **R Markdown**.
 
 ```{r}
-library(tidyverse)
-library(janitor)
-library(skimr)
-
-fastfood <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv')
-
-fastfood <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv')
-
-fastfood%>%head(10) #Display the first 10 rows of the dataset.
-
-knitr::kable(head(fastfood[, 1:5]))
-
-fastfood%>%
-  filter(calories>1130) #Display the observations that has more than 1000 calories
+## install packages once via console using - install.packages("tidyverse")
+library(tidyverse) # load tidyverse library
+library(skimr)     # load skimr library
+library(janitor)   # load janitor library
 ```
+
+### Insert an R chunk and create a dataset variable called `fastfood`
+```{r}
+fastfood <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv')
+```
+
+### Display the **first 10 rows** and **first 5 variables** of the `fastfood` dataset
+```{r}
+# fastfood%>%head(10) # Display the first 10 rows of the dataset using head() function.
+knitr::kable(head(fastfood[, 1:5])) # first 10 rows of the dataset and the first 5 variables using kabble() function
+```
+
+### Display observations that have more than **1000 calories**
+```{r}
+fastfood%>%             # Pipe dataset into filter function 
+  filter(calories>1000) # Filter by calories greater than 1000
+```
+
+### Save observations with more than **40 in total_fat** and more than **80 in total_carb** in a new variable called `dont_eat_this`
+```{r}
+dont_eat_this <- fastfood%>%           # Create new variable called `dont_eat_this` and assign filtered dataset to it 
+  filter(total_fat>40 & total_carb>80) # filter by total_fat greater than 40 & total_carb greatre than 80
+```
+
+### Using the initial dataset variable, display observations from restaurant **Mcdonalds**
+```{r}
+fastfood%>%                       # Pipe dataset into filter function
+  filter(restaurant=="Mcdonalds") # Filter by restaurant named Mcdonalds
+```
+
+
 
 

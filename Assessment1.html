@@ -177,7 +177,8 @@ pre code {
 <p>R Markdown documents allow you to weave together narrative text and code to produce elegantly formatted output in dozens of formats, such as HTML, PDF, and MS Word documents.</p>
 <p>For more details on how to use R Markdown see <a href="https://rmarkdown.rstudio.com/lesson-8.html">Markdown Basics</a></p>
 <p>This document was created with <strong>R Markdown</strong>.</p>
-<pre class="r"><code>library(tidyverse)</code></pre>
+<pre class="r"><code>## install packages once via console using - install.packages(&quot;tidyverse&quot;)
+library(tidyverse) # load tidyverse library</code></pre>
 <pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
 <pre><code>## v ggplot2 3.3.5     v purrr   0.3.4
 ## v tibble  3.1.3     v dplyr   1.0.7
@@ -186,15 +187,16 @@ pre code {
 <pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>library(janitor)</code></pre>
+<pre class="r"><code>library(skimr)     # load skimr library
+library(janitor)   # load janitor library</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;janitor&#39;</code></pre>
 <pre><code>## The following objects are masked from &#39;package:stats&#39;:
 ## 
 ##     chisq.test, fisher.test</code></pre>
-<pre class="r"><code>library(skimr)
-
-fastfood &lt;- read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv&#39;)</code></pre>
+<div id="insert-an-r-chunk-and-create-a-dataset-variable-called-fastfood" class="section level3">
+<h3>Insert an R chunk and create a dataset variable called <code>fastfood</code></h3>
+<pre class="r"><code>fastfood &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv&#39;)</code></pre>
 <pre><code>## New names:
 ## * `` -&gt; ...1</code></pre>
 <pre><code>## Rows: 515 Columns: 18</code></pre>
@@ -205,24 +207,11 @@ fastfood &lt;- read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/t
 <pre><code>## 
 ## i Use `spec()` to retrieve the full column specification for this data.
 ## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>fastfood%&gt;%head(10) #Display the first 10 rows of the dataset.</code></pre>
-<pre><code>## # A tibble: 10 x 18
-##     ...1 restaurant item            calories cal_fat total_fat sat_fat trans_fat
-##    &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;              &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
-##  1     1 Mcdonalds  Artisan Grille~      380      60         7       2       0  
-##  2     2 Mcdonalds  Single Bacon S~      840     410        45      17       1.5
-##  3     3 Mcdonalds  Double Bacon S~     1130     600        67      27       3  
-##  4     4 Mcdonalds  Grilled Bacon ~      750     280        31      10       0.5
-##  5     5 Mcdonalds  Crispy Bacon S~      920     410        45      12       0.5
-##  6     6 Mcdonalds  Big Mac              540     250        28      10       1  
-##  7     7 Mcdonalds  Cheeseburger         300     100        12       5       0.5
-##  8     8 Mcdonalds  Classic Chicke~      510     210        24       4       0  
-##  9     9 Mcdonalds  Double Cheeseb~      430     190        21      11       1  
-## 10    10 Mcdonalds  Double Quarter~      770     400        45      21       2.5
-## # ... with 10 more variables: cholesterol &lt;dbl&gt;, sodium &lt;dbl&gt;,
-## #   total_carb &lt;dbl&gt;, fiber &lt;dbl&gt;, sugar &lt;dbl&gt;, protein &lt;dbl&gt;, vit_a &lt;dbl&gt;,
-## #   vit_c &lt;dbl&gt;, calcium &lt;dbl&gt;, salad &lt;chr&gt;</code></pre>
-<pre class="r"><code>knitr::kable(head(fastfood[, 1:5]))</code></pre>
+</div>
+<div id="display-the-first-10-rows-and-first-5-variables-of-the-fastfood-dataset" class="section level3">
+<h3>Display the <strong>first 10 rows</strong> and <strong>first 5 variables</strong> of the <code>fastfood</code> dataset</h3>
+<pre class="r"><code># fastfood%&gt;%head(10) # Display the first 10 rows of the dataset using head() function.
+knitr::kable(head(fastfood[, 1:5])) # first 10 rows of the dataset and the first 5 variables using kabble() function</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -278,30 +267,54 @@ fastfood &lt;- read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/t
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>fastfood%&gt;%
-  filter(calories&gt;1130) #Display the observations that has more than 1000 calories</code></pre>
-<pre><code>## # A tibble: 16 x 18
-##     ...1 restaurant  item           calories cal_fat total_fat sat_fat trans_fat
-##    &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;             &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
-##  1    38 Mcdonalds   10 piece Butt~     1210     630        70      12       1  
-##  2    39 Mcdonalds   12 piece Butt~     1510     790        88      15       1  
-##  3    40 Mcdonalds   20 piece Butt~     2430    1270       141      24       2  
-##  4    45 Mcdonalds   40 piece Chic~     1770     960       107      18       0.5
-##  5    48 Mcdonalds   10 piece Swee~     1600     600        66      10       0  
-##  6    99 Sonic       Super Sonic B~     1280     830        92      36       4  
-##  7   102 Sonic       Super Sonic D~     1220     780        87      34       4  
-##  8   116 Sonic       Garlic Parmes~     1350     900       100      17       0  
-##  9   123 Sonic       5 Piece Super~     1190     510        57      10       1  
-## 10   193 Burger King American Brew~     1550    1134       126      47       8  
-## 11   206 Burger King Farmhouse King     1220     720        80      28       3  
-## 12   212 Burger King Rodeo King         1250     738        82      31       3.5
-## 13   271 Dairy Queen 6 Piece Chick~     1260     590        66      11       1  
-## 14   310 Subway      Footlong Big ~     1160     620        62      22       0  
-## 15   319 Subway      Footlong Carv~     1140     460        52      14       0  
-## 16   321 Subway      Footlong Chic~     1140     500        56      20       2  
-## # ... with 10 more variables: cholesterol &lt;dbl&gt;, sodium &lt;dbl&gt;,
-## #   total_carb &lt;dbl&gt;, fiber &lt;dbl&gt;, sugar &lt;dbl&gt;, protein &lt;dbl&gt;, vit_a &lt;dbl&gt;,
-## #   vit_c &lt;dbl&gt;, calcium &lt;dbl&gt;, salad &lt;chr&gt;</code></pre>
+</div>
+<div id="display-observations-that-have-more-than-1000-calories" class="section level3">
+<h3>Display observations that have more than <strong>1000 calories</strong></h3>
+<pre class="r"><code>fastfood%&gt;%             # Pipe dataset into filter function 
+  filter(calories&gt;1000) # Filter by calories greater than 1000</code></pre>
+<pre><code>## # A tibble: 28 x 18
+##     ...1 restaurant item            calories cal_fat total_fat sat_fat trans_fat
+##    &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;              &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+##  1     3 Mcdonalds  Double Bacon S~     1130     600        67      27       3  
+##  2    38 Mcdonalds  10 piece Butte~     1210     630        70      12       1  
+##  3    39 Mcdonalds  12 piece Butte~     1510     790        88      15       1  
+##  4    40 Mcdonalds  20 piece Butte~     2430    1270       141      24       2  
+##  5    45 Mcdonalds  40 piece Chick~     1770     960       107      18       0.5
+##  6    48 Mcdonalds  10 piece Sweet~     1600     600        66      10       0  
+##  7    99 Sonic      Super Sonic Ba~     1280     830        92      36       4  
+##  8   100 Sonic      Super Sonic Do~     1120     680        76      32       4  
+##  9   101 Sonic      Super Sonic Do~     1130     680        76      32       4  
+## 10   102 Sonic      Super Sonic Do~     1220     780        87      34       4  
+## # ... with 18 more rows, and 10 more variables: cholesterol &lt;dbl&gt;,
+## #   sodium &lt;dbl&gt;, total_carb &lt;dbl&gt;, fiber &lt;dbl&gt;, sugar &lt;dbl&gt;, protein &lt;dbl&gt;,
+## #   vit_a &lt;dbl&gt;, vit_c &lt;dbl&gt;, calcium &lt;dbl&gt;, salad &lt;chr&gt;</code></pre>
+</div>
+<div id="save-observations-with-more-than-40-in-total_fat-and-more-than-80-in-total_carb-in-a-new-variable-called-dont_eat_this" class="section level3">
+<h3>Save observations with more than <strong>40 in total_fat</strong> and more than <strong>80 in total_carb</strong> in a new variable called <code>dont_eat_this</code></h3>
+<pre class="r"><code>dont_eat_this &lt;- fastfood%&gt;%           # Create new variable called `dont_eat_this` and assign filtered dataset to it 
+  filter(total_fat&gt;40 &amp; total_carb&gt;80) # filter by total_fat greater than 40 &amp; total_carb greatre than 80</code></pre>
+</div>
+<div id="using-the-initial-dataset-variable-display-observations-from-restaurant-mcdonalds" class="section level3">
+<h3>Using the initial dataset variable, display observations from restaurant <strong>Mcdonalds</strong></h3>
+<pre class="r"><code>fastfood%&gt;%                       # Pipe dataset into filter function
+  filter(restaurant==&quot;Mcdonalds&quot;) # Filter by restaurant named Mcdonalds</code></pre>
+<pre><code>## # A tibble: 57 x 18
+##     ...1 restaurant item            calories cal_fat total_fat sat_fat trans_fat
+##    &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;              &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+##  1     1 Mcdonalds  Artisan Grille~      380      60         7       2       0  
+##  2     2 Mcdonalds  Single Bacon S~      840     410        45      17       1.5
+##  3     3 Mcdonalds  Double Bacon S~     1130     600        67      27       3  
+##  4     4 Mcdonalds  Grilled Bacon ~      750     280        31      10       0.5
+##  5     5 Mcdonalds  Crispy Bacon S~      920     410        45      12       0.5
+##  6     6 Mcdonalds  Big Mac              540     250        28      10       1  
+##  7     7 Mcdonalds  Cheeseburger         300     100        12       5       0.5
+##  8     8 Mcdonalds  Classic Chicke~      510     210        24       4       0  
+##  9     9 Mcdonalds  Double Cheeseb~      430     190        21      11       1  
+## 10    10 Mcdonalds  Double Quarter~      770     400        45      21       2.5
+## # ... with 47 more rows, and 10 more variables: cholesterol &lt;dbl&gt;,
+## #   sodium &lt;dbl&gt;, total_carb &lt;dbl&gt;, fiber &lt;dbl&gt;, sugar &lt;dbl&gt;, protein &lt;dbl&gt;,
+## #   vit_a &lt;dbl&gt;, vit_c &lt;dbl&gt;, calcium &lt;dbl&gt;, salad &lt;chr&gt;</code></pre>
+</div>
 </div>
 
 

@@ -24,6 +24,7 @@ This document was created with **R Markdown**.
 library(tidyverse) # load tidyverse library
 library(skimr)     # load skimr library
 library(janitor)   # load janitor library
+library(ggplot2)   # load ggplot library
 ```
 
 ### Insert an R chunk and create a dataset variable called `fastfood`
@@ -54,6 +55,75 @@ dont_eat_this <- fastfood%>%           # Create new variable called `dont_eat_th
 fastfood%>%                       # Pipe dataset into filter function
   filter(restaurant=="Mcdonalds") # Filter by restaurant named Mcdonalds
 ```
+
+## Part 2
+
+### Display the types of variables in the dataset using `skimr` package
+```{r}
+#skim(fastfood)
+fastfood%>%skim() # Pipe dataset into skim function
+```
+
+### Show the count of observations for each restaurant.
+```{r}
+fastfood%>%count(restaurant) # Pipe dataset into count function and count restaurants.
+```
+
+### Using grouppings (group_by()), summarise and display the average number of calories for each restaurant.
+```{r}
+fastfood%>%
+  group_by(restaurant)%>%
+  summarise(calories=mean(calories))
+```
+
+### Add a variable to the dataset, which calculates the average calories per type of restaurant and call it `average_calories`
+```{r}
+fastfood<-fastfood %>%
+  group_by(restaurant)%>%
+  mutate(average_calories=mean(calories))
+```
+
+### Display the data vis of total fat per each type of restaurant
+```{r}
+fastfood %>%
+  #group_by(restaurant)%>%
+  ggplot(
+    aes(x=total_fat,
+      color=restaurant,
+      fill=restaurant
+  )
+)+
+  geom_histogram()
+```
+
+```{r}
+fastfood%>%
+  group_by(restaurant)%>%
+  summarise(restaurant_fat=mean(total_fat))%>%
+  ggplot(aes(restaurant,restaurant_fat,color=restaurant,fill=restaurant))+
+  geom_col()+
+  coord_flip()
+```
+
+
+
+
+### Add a variable to the dataset, which calculates the maximum total fat per type of restaurant and call it `max_total_fat
+```{r}
+fastfood<-fastfood %>%
+  group_by(restaurant)%>%
+  mutate(max_total_fat=max(total_fat))
+```
+
+### Use observations for Mcdonalds to plot sugar variable against protein with `geom_point()`
+```{r}
+fastfood%>%
+  filter(restaurant=="Mcdonalds") %>%
+  ggplot(aes(sugar,protein))+
+  geom_point()
+```
+
+
 
 
 

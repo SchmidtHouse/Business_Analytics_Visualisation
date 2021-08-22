@@ -24,6 +24,8 @@ library(tidyverse)
 library(janitor)
 library(skimr)
 
+fastfood <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv')
+
 fastfood <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv')
 
 fastfood%>%head(10) #Display the first 10 rows of the dataset.

@@ -85,27 +85,14 @@ fastfood<-fastfood %>%
 
 ### Display the data vis of total fat per each type of restaurant
 ```{r}
-fastfood %>%
-  #group_by(restaurant)%>%
-  ggplot(
-    aes(x=total_fat,
-      color=restaurant,
-      fill=restaurant
-  )
-)+
-  geom_histogram()
-```
-
-```{r}
 fastfood%>%
   group_by(restaurant)%>%
-  summarise(restaurant_fat=mean(total_fat))%>%
-  ggplot(aes(restaurant,restaurant_fat,color=restaurant,fill=restaurant))+
+  summarise(restaurant_fat=sum(total_fat))%>%
+  ggplot(aes(reorder(restaurant, -restaurant_fat),restaurant_fat,color=restaurant,fill=restaurant))+
   geom_col()+
+  labs(x = "Restaurant", y = "Total fat per each type of restaurant")+
   coord_flip()
 ```
-
-
 
 
 ### Add a variable to the dataset, which calculates the maximum total fat per type of restaurant and call it `max_total_fat

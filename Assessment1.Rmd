@@ -78,15 +78,15 @@ fastfood %>%
 ### 13. Using grouppings `group_by()`, summarise and display the average number of calories for each restaurant.
 ```{r}
 fastfood %>%
-  group_by(restaurant) %>%
-  summarise(calories=mean(calories))
+  group_by(restaurant) %>% # Pipe dataset into group_by function and group by restaurant
+  summarise(calories=mean(calories)) # Pipe dataset into summarise function and use mean function to get avg calories
 ```
 
 ### 14. Add a variable to the dataset, which calculates the average calories per type of restaurant and call it `average_calories`
 ```{r}
 fastfood <- fastfood %>%
-  group_by(restaurant) %>%
-  mutate(average_calories=mean(calories))
+  group_by(restaurant) %>% # Pipe dataset into group_by function and group by restaurant
+  mutate(average_calories=mean(calories)) #Pipe into mutate function to create new variable, use mean function to get avg calories
 ```
 
 ### 15. Display the data vis of total fat per each type of restaurant
@@ -98,38 +98,38 @@ Burger King has the highest total fat
 
 ```{r}
 fastfood%>%
-  group_by(restaurant)%>%
-  summarise(restaurant_fat=sum(total_fat))%>%
-  ggplot(aes(reorder(restaurant, -restaurant_fat),restaurant_fat,color=restaurant,fill=restaurant))+
-  geom_col()+
-  labs(x = "Restaurant", y = "Total fat per restaurant")+
-  coord_flip()+
-  theme(legend.position = "none")
+  group_by(restaurant)%>% # Pipe dataset into group_by function and group by restaurant
+  summarise(restaurant_fat=sum(total_fat))%>% # Pipe dataset into summarise function and use sum function to get total fat
+  ggplot(aes(reorder(restaurant, -restaurant_fat),restaurant_fat,color=restaurant,fill=restaurant))+ #use ggplot and reorder by fat
+  geom_col()+ # add Bar charts using geom_col
+  labs(x = "Restaurant", y = "Total fat per restaurant")+ #add label to the plot
+  coord_flip()+ # change postion of X and Y coords
+  theme(legend.position = "none") # remove the legend
 ```
 
 
 ### 16. Add a variable to the dataset, which calculates the maximum total fat per type of restaurant and call it `max_total_fat`
 ```{r}
-fastfood<-fastfood %>%
-  group_by(restaurant)%>%
-  mutate(max_total_fat=max(total_fat))
+fastfood<-fastfood %>%  # write back to dataset 
+  group_by(restaurant)%>% # Pipe dataset into group_by function and group by restaurant 
+  mutate(max_total_fat=max(total_fat)) #Pipe into mutate function to create new variable, use max fuction to get max fat
 ```
 
 ### 17. Use observations for Mcdonalds to plot sugar variable against protein with `geom_point()`
 ```{r}
 fastfood%>%
-  filter(restaurant=="Mcdonalds") %>%
-  ggplot(aes(sugar,protein))+
-  geom_point()
+  filter(restaurant=="Mcdonalds") %>% # Pipe dataset into filter function and select Mcdonalds
+  ggplot(aes(sugar,protein))+ # use ggplot to plot sugar variable against protein
+  geom_point() # Pipe into geom_point to create scatterplots
 ```
 
 ### PART 3 
 
 ### 18. Identify variable(s) which should be factors and transform their type into a factor variable.
 ```{r}
-names(fastfood)
+names(fastfood) #investigate dataset using names function
 
-fastfood <- fastfood %>%
+fastfood <- fastfood %>% # Pipe dataset into mutate  
   mutate(restaurant=as_factor(restaurant)) #convert restaurant to a factor
 
 fastfood %>% head() #check to see if restaurant has been converted to a factor
@@ -138,54 +138,54 @@ fastfood %>% head() #check to see if restaurant has been converted to a factor
 ### 19. Create two new variables: add a new variable to the dataset `calories_type`
 ### Use `calories` variable for `cut_number()` function to split it into 3 categories `n=3`, add labels `labels=c("low", "med", "high")` and make the dataset ordered. 
 ```{r}
-fastfood <- fastfood %>%
-  mutate(calories_type = cut_number(calories, n=3, labels=c("low", "med", "high"))) %>%
-  arrange(calories)
+fastfood <- fastfood %>% # Pipe dataset into mutate 
+  mutate(calories_type = cut_number(calories, n=3, labels=c("low", "med", "high"))) %>% #use cut_ restaurant to a factor
+  arrange(calories) #make dataset ordered using arrange by calories
 ```
 
 ### 20. Display the dataviz of shows the distribution of `calories_type` in food items for each type of restaurant.
 ### Use facets, coordinates and theme layers to make your data viz visually appealing and meaningful. 
 ### Use factors related data viz functions
 ```{r}
-fastfood %>% 
-  ggplot(aes(calories_type,color=calories_type,fill = calories_type))+
-  geom_bar()+
-  facet_wrap(vars(restaurant), ncol = 4)+
-  labs(x = "Distribution of calories (low, med, high) per Restaurant")
+fastfood %>% # Pipe dataset into ggplot
+  ggplot(aes(calories_type,color=calories_type,fill = calories_type))+ # use ggplot to plot calories_type by restaurant
+  geom_bar()+ # add Bar charts using geom_bar
+  facet_wrap(vars(restaurant), ncol = 4)+ # use function facet_wrap to create a plot for each restaurant
+  labs(x = "Distribution of calories (low, med, high) per Restaurant") #add label to the plot
 ```
 
 ### 21. Add the variable to the dataset and call it `trans_fat_percent`
 ### `trans_fat_percent` equals the percentage of `trans_fat` in `total_fat`
 ```{r}
 fastfood <- fastfood %>%
-  mutate(trans_fat_percent = trans_fat/total_fat*100)
+  mutate(trans_fat_percent = trans_fat/total_fat*100) # Pipe into mutate to create new variable, use trans_fat/total_fat*100
 ```
 
 ### 22. Display the dataviz of shows the distribution of `trans_fat` in food items for each type of restaurant.
 ```{r}
 fastfood %>% 
-  ggplot(aes(trans_fat))+
-  geom_histogram(binwidth = 0.3)+
-  facet_wrap(vars(restaurant), ncol = 4)
+  ggplot(aes(trans_fat))+  # use ggplot to plot trans_fat
+  geom_histogram(binwidth = 0.3)+ # add histogram using geom_histogram
+  facet_wrap(vars(restaurant), ncol = 4) # use function facet_wrap to create a plot for each restaurant
 
 ```
 
 ### 23. Calculate and show the average (mean) `total_fat` for each type of restaurant.
 ```{r}
 fastfood %>%
-  group_by(restaurant)%>%
-  summarise(total_fat=mean(total_fat))
+  group_by(restaurant)%>% # Pipe dataset into group_by function and group by restaurant
+  summarise(total_fat=mean(total_fat)) # Pipe into summarise function and use mean function to show average total fat 
 ```
 
 ### 24. Create a dataviz that allow to compare different restaurants on this variable `total_fat`.
 ```{r}
 fastfood %>%
-  group_by(restaurant)%>%
-  summarise(restaurant_fat=mean(total_fat))%>%
-  ggplot(aes(reorder(restaurant, -restaurant_fat),restaurant_fat, fill=restaurant))+
-  geom_col()+
-  labs(x = "Restaurant", y = "Average fat per restaurant")+
-  theme(legend.position = "none")
+  group_by(restaurant)%>% # Pipe dataset into group_by function and group by restaurant
+  summarise(restaurant_fat=mean(total_fat))%>% # Pipe into summarise function and use mean function to show average total fat 
+  ggplot(aes(reorder(restaurant, -restaurant_fat),restaurant_fat, fill=restaurant))+ # use ggplot to plot fat by restaurant
+  geom_col()+ # add Bar charts using geom_col
+  labs(x = "Restaurant", y = "Average fat per restaurant")+ # #add label to the plot
+  theme(legend.position = "none") # remove the legend
 ```
 
 

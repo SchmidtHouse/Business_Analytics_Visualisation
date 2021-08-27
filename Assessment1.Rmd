@@ -69,13 +69,13 @@ fastfood %>%
   skim() # Pipe dataset into skim function
 ```
 
-### 12. Show the count of observations for each restaurant.
+### 12. Show the `count` of observations for each restaurant.
 ```{r}
 fastfood %>% 
   count(restaurant) # Pipe dataset into count function and count restaurants.
 ```
 
-### 13. Using grouppings (group_by()), summarise and display the average number of calories for each restaurant.
+### 13. Using grouppings `group_by()`, summarise and display the average number of calories for each restaurant.
 ```{r}
 fastfood %>%
   group_by(restaurant) %>%
@@ -108,7 +108,7 @@ fastfood%>%
 ```
 
 
-### 16. Add a variable to the dataset, which calculates the maximum total fat per type of restaurant and call it `max_total_fat
+### 16. Add a variable to the dataset, which calculates the maximum total fat per type of restaurant and call it `max_total_fat`
 ```{r}
 fastfood<-fastfood %>%
   group_by(restaurant)%>%
@@ -165,19 +165,19 @@ fastfood <- fastfood %>%
 ```{r}
 fastfood %>% 
   ggplot(aes(trans_fat))+
-  geom_histogram(binwidth = 0.5)+
+  geom_histogram(binwidth = 0.3)+
   facet_wrap(vars(restaurant), ncol = 4)
 
 ```
 
-### 23. Calculate and show the average (mean)  `total_fat` for each type of restaurant.
+### 23. Calculate and show the average (mean) `total_fat` for each type of restaurant.
 ```{r}
 fastfood %>%
   group_by(restaurant)%>%
   summarise(total_fat=mean(total_fat))
 ```
 
-### 24. Create a dataviz that allow to compare different restaurants on this variable (`total_fat`).
+### 24. Create a dataviz that allow to compare different restaurants on this variable `total_fat`.
 ```{r}
 fastfood %>%
   group_by(restaurant)%>%

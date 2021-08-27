@@ -25,6 +25,7 @@ library(tidyverse) # load tidyverse library
 library(skimr)     # load skimr library
 library(janitor)   # load janitor library
 library(ggplot2)   # load ggplot library
+library(knitr)     # load knitr library
 ```
 
 ### 6. Insert an R chunk and create a dataset variable called `fastfood`
@@ -36,7 +37,7 @@ fastfood <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/t
 ```{r}
 fastfood%>%head(10)                 # Display the first 10 rows of the dataset using head() function.
 
-knitr::kable((fastfood[1:10, 1:5])) # first 10 rows of the dataset and the first 5 variables using kabble() function
+kable((fastfood[1:10, 1:5])) # first 10 rows of the dataset and the first 5 variables using kabble() function
 
 ```
 
@@ -101,7 +102,7 @@ fastfood%>%
   summarise(restaurant_fat=sum(total_fat))%>%
   ggplot(aes(reorder(restaurant, -restaurant_fat),restaurant_fat,color=restaurant,fill=restaurant))+
   geom_col()+
-  labs(x = "Restaurant", y = "Total fat per each type of restaurant")+
+  labs(x = "Restaurant", y = "Total fat per restaurant")+
   coord_flip()+
   theme(legend.position = "none")
 ```
@@ -149,8 +150,8 @@ fastfood <- fastfood %>%
 fastfood %>% 
   ggplot(aes(calories_type,color=calories_type,fill = calories_type))+
   geom_bar()+
-  facet_wrap(vars(restaurant), ncol = 4)
-
+  facet_wrap(vars(restaurant), ncol = 4)+
+  labs(x = "Distribution of calories (low, med, high) per Restaurant")
 ```
 
 ### 21. Add the variable to the dataset and call it `trans_fat_percent`

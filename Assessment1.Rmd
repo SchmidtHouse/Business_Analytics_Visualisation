@@ -34,7 +34,7 @@ fastfood <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/t
 
 ### 7. Display the **first 10 rows** and **first 5 variables** of the `fastfood` dataset
 ```{r}
-#fastfood%>%head(10) # Display the first 10 rows of the dataset using head() function.
+fastfood%>%head(10)                 # Display the first 10 rows of the dataset using head() function.
 
 knitr::kable((fastfood[1:10, 1:5])) # first 10 rows of the dataset and the first 5 variables using kabble() function
 
@@ -43,7 +43,8 @@ knitr::kable((fastfood[1:10, 1:5])) # first 10 rows of the dataset and the first
 ### 8. Display observations that have more than **1000 calories**
 ```{r}
 fastfood%>%             # Pipe dataset into filter function 
-  filter(calories>1000) # Filter by calories greater than 1000
+  filter(calories>1000) # Filter by calories greater than 1000 
+
 ```
 
 ### 9. Save observations with more than **40 in total_fat** and more than **80 in total_carb** in a new variable called `dont_eat_this`
@@ -63,25 +64,27 @@ fastfood%>%                       # Pipe dataset into filter function
 ### 11. Display the types of variables in the dataset using `skimr` package
 ```{r}
 #skim(fastfood)
-fastfood%>%skim() # Pipe dataset into skim function
+fastfood %>% 
+  skim() # Pipe dataset into skim function
 ```
 
 ### 12. Show the count of observations for each restaurant.
 ```{r}
-fastfood%>%count(restaurant) # Pipe dataset into count function and count restaurants.
+fastfood %>% 
+  count(restaurant) # Pipe dataset into count function and count restaurants.
 ```
 
 ### 13. Using grouppings (group_by()), summarise and display the average number of calories for each restaurant.
 ```{r}
-fastfood%>%
-  group_by(restaurant)%>%
+fastfood %>%
+  group_by(restaurant) %>%
   summarise(calories=mean(calories))
 ```
 
 ### 14. Add a variable to the dataset, which calculates the average calories per type of restaurant and call it `average_calories`
 ```{r}
-fastfood<-fastfood %>%
-  group_by(restaurant)%>%
+fastfood <- fastfood %>%
+  group_by(restaurant) %>%
   mutate(average_calories=mean(calories))
 ```
 
@@ -135,7 +138,8 @@ fastfood %>% head() #check to see if restaurant has been converted to a factor
 ### Use `calories` variable for `cut_number()` function to split it into 3 categories `n=3`, add labels `labels=c("low", "med", "high")` and make the dataset ordered. 
 ```{r}
 fastfood <- fastfood %>%
-  mutate(calories_type = cut_number(calories, n=3, labels=c("low", "med", "high")))
+  mutate(calories_type = cut_number(calories, n=3, labels=c("low", "med", "high"))) %>%
+  arrange(calories)
 ```
 
 ### 20. Display the dataviz of shows the distribution of `calories_type` in food items for each type of restaurant.
@@ -143,7 +147,7 @@ fastfood <- fastfood %>%
 ### Use factors related data viz functions
 ```{r}
 fastfood %>% 
-  ggplot(aes(calories_type))+
+  ggplot(aes(calories_type,color=calories_type,fill = calories_type))+
   geom_bar()+
   facet_wrap(vars(restaurant), ncol = 4)
 
@@ -160,8 +164,9 @@ fastfood <- fastfood %>%
 ```{r}
 fastfood %>% 
   ggplot(aes(trans_fat))+
-  geom_bar()+
+  geom_histogram(binwidth = 0.5)+
   facet_wrap(vars(restaurant), ncol = 4)
+
 ```
 
 ### 23. Calculate and show the average (mean)  `total_fat` for each type of restaurant.
@@ -175,109 +180,19 @@ fastfood %>%
 ```{r}
 fastfood %>%
   group_by(restaurant)%>%
-  summarise(restaurant_fat=sum(total_fat))%>%
+  summarise(restaurant_fat=mean(total_fat))%>%
   ggplot(aes(reorder(restaurant, -restaurant_fat),restaurant_fat, fill=restaurant))+
   geom_col()+
-  labs(x = "Restaurant", y = "Total fat per restaurant")+
+  labs(x = "Restaurant", y = "Average fat per restaurant")+
   theme(legend.position = "none")
 ```
 
 
 
 
-## testing
-```{r}
-fastfood %>% 
-  filter(str_detect(item, "Sandwich")) %>%
-  ggplot(aes(restaurant, item, fill = calories_type)) +
-  geom_col() +
-  facet_wrap(~ restaurant) +
-  theme(legend.position = "none")
-  
-  
-
-fastfood %>%
-  filter(str_detect(item, "Burger")) %>%
-  count(item)
 
 
 
-fastfood%>%count(item, sort=TRUE)
-
-fastfood %>% count(calories_type, sort = TRUE)
-
-restaurant_lumped <- fastfood %>%
-  filter(!is.na(restaurant)) %>%
-  mutate(restaurant = fct_lump(restaurant, 8), sort = TRUE)
-
-
-restaurant_lumped <- fastfood %>%
-  mutate(restaurant_id = row_number())
-
-fastfood_id %>% count(calories_type, sort = TRUE)
-
-restaurant_lumped <- fastfood %>%
-  mutate(calories_type = fct_lump(calories_type, 8), sort = TRUE)
-
-restaurant_lumped %>%
-  filter(str_detect(item, "Burger")) %>%
-  ggplot(aes(restaurant, fill = calories_type)) +
-  geom_histogram(binwidth = 2) +
-  facet_wrap(~ restaurant_lumped, scale = "free_y") +
-  theme(legend.position = "none")
-  
-skim(restaurant_lumped)
-```
-
-
-
-## Workshop 7
-```{r}
-coffee_ratings <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-07/coffee_ratings.csv')
-
-coffee_ratings <- coffee_ratings %>%
-  mutate(coffee_id = row_number()) %>%
-  filter(total_cup_points > 0)
-
-coffee_ratings%>% count(variety, sort =TRUE)
-coffee_ratings %>% count(species, sort = TRUE)
-
-coffee_lumped <- coffee_ratings %>%
-  filter(!is.na(variety)) %>%
-  mutate(variety = fct_lump(variety, 12), sort = TRUE)
-
-coffee_lumped %>%
-  mutate(variety = fct_reorder(variety, total_cup_points)) %>%
-  ggplot(aes(total_cup_points, variety)) +
-  geom_boxplot()
-
-coffee_lumped %>%
-  ggplot(aes(total_cup_points, fill = variety)) +
-  geom_histogram(binwidth = 2) +
-  facet_wrap(~ variety, scale = "free_y") +
-  theme(legend.position = "none")
-
-
-coffee_ratings %>%
-  count(country = fct_lump(country_of_origin, 12), sort = TRUE) %>%
-  filter(!is.na(country)) %>%
-  mutate(country = fct_reorder(country, n)) %>%
-  ggplot(aes(n, country)) +
-  geom_col()
-
-
-```
-
-
-
-
-
-```{r}
-cut_number(c(1,2,4,6,7,8,9), n=3)
-
-
-data%>%cut_number(var, n=3, labels=c("low", "med", "high"))
-```
 
 
 

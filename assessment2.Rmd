@@ -43,19 +43,8 @@ data %>%
 ### 3. Use `fct_reorder` and `parse_number` functions to create a factor variable `family_income`
 ```{r}
 # use fct_reorder
-test_data <- data %>%
+data <- data %>%
   mutate(family_income = fct_reorder(family_income, parse_number(family_income, na = c("Prefer not to answer")))) 
-
-
-
-head(test_data)
-rm(test_data)
-
-# use arrange
-arrange_data <- data %>%
-  mutate(family_income = parse_number(family_income, na = c("Prefer not to answer"))) %>% #drops any non-numeric characters
-  mutate(family_income=as_factor(family_income)) %>% #convert family_income to a factor
-  arrange(family_income) 
 ```
 
 
@@ -71,7 +60,7 @@ data %>%
 ```{r}
 data %>%
   filter(!is.na(main_dish) & !is.na(main_prep)) %>%
-  group_by(main_dish, main_prep) %>%
+  group_by(main_dish, main_prep, main_prep_other) %>%
   count(main_dish, sort=TRUE) %>%
   kable()
 
@@ -80,20 +69,22 @@ data %>%
 ### 6. Create 3 different data viz showing insights for main dish served and the method.
 
 ```{r}
+# Data viz 1
 data %>% 
   filter(!is.na(main_dish) & !is.na(main_prep)) %>%
   mutate(main_dish = fct_collapse(main_dish, Other = c("I don't know", "Other (please specify)", "Turducken"))) %>%
   mutate(main_prep = fct_collapse(main_prep, Other = c("I don't know", "Other (please specify)"))) %>%
-  ggplot(aes(main_prep,color=main_prep,fill = main_prep))+ 
+  ggplot(aes(main_prep, color=main_prep,fill = main_prep))+ 
   geom_bar()+ # add Bar charts using geom_bar
   facet_wrap(vars(main_dish), ncol = 3, scales = "free_x")+ 
-  labs(x = "Method") +
+  labs(x = "Method")+
   coord_flip()+
   theme(legend.position = "none")
 ```
 
 
 ```{r}
+# Data viz 2
 data %>%
   filter(!is.na(main_dish) & !is.na(main_prep)) %>%
   mutate(main_dish = fct_collapse(main_dish, Other = c("I don't know", "Other (please specify)", "Turducken"))) %>%
@@ -107,11 +98,11 @@ data %>%
 
 
 ```{r}
-# Use fct_lump to lump together all the small groups 
+# Data viz 3
 data %>%
   filter(!is.na(main_dish) & !is.na(main_prep)) %>%
-  mutate(main_dish = fct_lump(main_dish)) %>%
-  mutate(main_prep = fct_lump(main_prep)) %>%
+  mutate(main_dish = fct_lump(main_dish)) %>% # Use fct_lump to lump together all the small main_dish 
+  mutate(main_prep = fct_lump(main_prep)) %>% # Use fct_lump to lump together all the small main_prep 
   ggplot(aes(main_dish,color=main_dish,fill = main_dish))+
   geom_bar()+
   facet_wrap(vars(main_prep), ncol = 3)+
@@ -127,7 +118,8 @@ data %>%
   mutate(cranberry = fct_collapse(cranberry,
                                   Yes = c("Homemade","Canned", "Other (please specify)"),
                                   No = c("None"))) %>%
-  count(cranberry,gravy, sort = TRUE)
+  count(cranberry, sort = TRUE) %>%
+  kable()
 ```
 
 
@@ -153,23 +145,12 @@ data %>%
 ### 8. What is the distribution of those who celebrate across income ranges
 
 ```{r}
-# Use fct_lump to lump together all the small groups 
-data %>%
-  mutate(family_income = fct_lump(family_income)) %>%
-  ggplot(aes(family_income,color=family_income,fill = family_income))+
-  geom_bar()+
-  facet_wrap(vars(celebrate), ncol = 8)+
-  labs(x = "Income") +
-  coord_flip() +
-  theme(legend.position = "none")
-
 data %>%
   filter((celebrate=="Yes") & !is.na(family_income)) %>%
-  #mutate(family_income = fct_lump(family_income)) %>%
   ggplot(aes(family_income,color=family_income,fill = family_income))+
   geom_bar()+
-  labs(x = "Income") +
-  coord_flip() +
+  labs(x = "Income ranges", y = "Distribution") +
+  coord_flip()+
   theme(legend.position = "none")
 ```
 
@@ -187,11 +168,20 @@ new_data <- data %>%
   mutate(type = str_remove(type, "\\d+"))
 ```
 
-### Intall package `widyr` and use `pairwise_cor()` function
+### 11. Intall package `widyr` and use `pairwise_cor()` function
 ```{r}
 install.packages("widyr")
+library(widyr)
+
+new_data %>% pairwise_cor(value, id, sort = TRUE)
 ```
 
+### 13. Use `lm()` function to build a model that predict a family income based on data in the dataset
+```{r}
+data %>%
+  filter((celebrate=="Yes") & !is.na(family_income)) %>%
+    lm(family_income~community_type)
+```
 
 
 

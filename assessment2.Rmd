@@ -1,7 +1,4 @@
 ---
-title: "Assessment2"
-author: "Christopher Schmidt S4532362"
-date: "01/09/2021"
 output: html_document
 ---
 
@@ -9,7 +6,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## *Christopher Schmidt* **S4532362**
+## *Christopher Schmidt* 
+## **S4532362**
+******
+# Assessment 2 
+******
 
 ```{r}
 ## install packages once via console using - install.packages("tidyverse")
@@ -21,22 +22,186 @@ library(knitr)     # load knitr library
 
 ```
 
-```{r} 
-#randomForest example
-install.packages("randomForest")
-library(randomForest)
-
-data(iris)
-
-set.seed(123)
-randomForest(Species~Sepal.Length+Sepal.Width, data = iris)
-
-```
-
-
 ### Insert an R chunk and create a dataset variable called `data`
 ```{r}
 data <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-11-20/thanksgiving_meals.csv')
+```
+
+### Part 2: Data Wrangling and visualization 
+
+### 1. Display the first 10 rows of the dataset using `kable()` function
+```{r}
+kable((data[1:10, 1:5])) # first 10 rows of the dataset and the first 5 variables using kabble() function
+```
+
+### 2. Using `skim()` display the summary of variables
+```{r}
+data %>% 
+  skim() # Pipe dataset into skim function
+```
+
+### 3. Use `fct_reorder` and `parse_number` functions to create a factor variable `family_income`
+```{r}
+# use fct_reorder
+test_data <- data %>%
+  mutate(family_income = fct_reorder(family_income, parse_number(family_income, na = c("Prefer not to answer")))) 
+
+
+
+head(test_data)
+rm(test_data)
+
+# use arrange
+arrange_data <- data %>%
+  mutate(family_income = parse_number(family_income, na = c("Prefer not to answer"))) %>% #drops any non-numeric characters
+  mutate(family_income=as_factor(family_income)) %>% #convert family_income to a factor
+  arrange(family_income) 
+```
+
+
+### 4. What is the number of people who celebrate?
+```{r}
+data %>% 
+  count(celebrate) %>% # Pipe dataset into count function and count restaurants.
+  arrange(-n) %>%
+  kable()
+```
+
+### 5. What are categories and insights for each main dish served and the method it is prepared?
+```{r}
+data %>%
+  filter(!is.na(main_dish) & !is.na(main_prep)) %>%
+  group_by(main_dish, main_prep) %>%
+  count(main_dish, sort=TRUE) %>%
+  kable()
+
+```
+
+### 6. Create 3 different data viz showing insights for main dish served and the method.
+
+```{r}
+data %>% 
+  filter(!is.na(main_dish) & !is.na(main_prep)) %>%
+  mutate(main_dish = fct_collapse(main_dish, Other = c("I don't know", "Other (please specify)", "Turducken"))) %>%
+  mutate(main_prep = fct_collapse(main_prep, Other = c("I don't know", "Other (please specify)"))) %>%
+  ggplot(aes(main_prep,color=main_prep,fill = main_prep))+ 
+  geom_bar()+ # add Bar charts using geom_bar
+  facet_wrap(vars(main_dish), ncol = 3, scales = "free_x")+ 
+  labs(x = "Method") +
+  coord_flip()+
+  theme(legend.position = "none")
+```
+
+
+```{r}
+data %>%
+  filter(!is.na(main_dish) & !is.na(main_prep)) %>%
+  mutate(main_dish = fct_collapse(main_dish, Other = c("I don't know", "Other (please specify)", "Turducken"))) %>%
+  mutate(main_prep = fct_collapse(main_prep, Other = c("I don't know", "Other (please specify)"))) %>%
+  ggplot(aes(main_dish,color=main_dish,fill = main_dish))+
+  geom_bar()+
+  facet_wrap(vars(main_prep), ncol = 2, scales = "free_x") +
+  labs(x = "Dish served") +
+  coord_flip()
+```
+
+
+```{r}
+# Use fct_lump to lump together all the small groups 
+data %>%
+  filter(!is.na(main_dish) & !is.na(main_prep)) %>%
+  mutate(main_dish = fct_lump(main_dish)) %>%
+  mutate(main_prep = fct_lump(main_prep)) %>%
+  ggplot(aes(main_dish,color=main_dish,fill = main_dish))+
+  geom_bar()+
+  facet_wrap(vars(main_prep), ncol = 3)+
+  labs(x = "Dish served") +
+  theme(legend.position = "none")
+```
+
+
+### 7. How many use cranberry sauce? How many use gravy?
+```{r}
+data %>%
+  filter(!is.na(main_dish)) %>%
+  mutate(cranberry = fct_collapse(cranberry,
+                                  Yes = c("Homemade","Canned", "Other (please specify)"),
+                                  No = c("None"))) %>%
+  count(cranberry,gravy, sort = TRUE)
+```
+
+
+```{r}
+data %>%
+  filter(!is.na(main_dish)) %>%
+  mutate(cranberry = fct_collapse(cranberry,
+                                  Yes = c("Homemade","Canned", "Other (please specify)"),
+                                  No = c("None"))) %>%
+  ggplot(aes(cranberry,color=cranberry,fill = cranberry))+
+  geom_bar()+
+  theme(legend.position = "none")
+```
+
+```{r}
+data %>%
+  filter(!is.na(main_dish)) %>%
+  mutate(gravy = gravy %>% fct_infreq() %>% fct_rev()) %>%
+  ggplot(aes(gravy)) +
+  geom_bar()
+```
+
+### 8. What is the distribution of those who celebrate across income ranges
+
+```{r}
+# Use fct_lump to lump together all the small groups 
+data %>%
+  mutate(family_income = fct_lump(family_income)) %>%
+  ggplot(aes(family_income,color=family_income,fill = family_income))+
+  geom_bar()+
+  facet_wrap(vars(celebrate), ncol = 8)+
+  labs(x = "Income") +
+  coord_flip() +
+  theme(legend.position = "none")
+
+data %>%
+  filter((celebrate=="Yes") & !is.na(family_income)) %>%
+  #mutate(family_income = fct_lump(family_income)) %>%
+  ggplot(aes(family_income,color=family_income,fill = family_income))+
+  geom_bar()+
+  labs(x = "Income") +
+  coord_flip() +
+  theme(legend.position = "none")
+```
+
+### 10. Use the following code to create a new data 
+
+```{r}
+new_data <- data %>%
+  select(id, starts_with("side"),
+         starts_with("pie"),
+         starts_with("dessert")) %>%
+  select(-side15, -pie13, -dessert12) %>%
+  gather(type, value, -id) %>%
+  filter(!is.na(value),
+         !value %in% c("None", "Other (please specify)")) %>%
+  mutate(type = str_remove(type, "\\d+"))
+```
+
+### Intall package `widyr` and use `pairwise_cor()` function
+```{r}
+install.packages("widyr")
+```
+
+
+
+
+```{r}
+data %>%
+  filter(!is.na(main_dish)) %>%
+  mutate(main_dish = fct_collapse(main_dish,
+                                  Other = c("I don't know", "Other (please specify)")
+  )) %>%
+  count(main_dish,main_dish_other, sort = TRUE)
 ```
 
 

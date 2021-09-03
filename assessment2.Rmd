@@ -47,7 +47,6 @@ data <- data %>%
   mutate(family_income = fct_reorder(family_income, parse_number(family_income, na = c("Prefer not to answer")))) 
 ```
 
-
 ### 4. What is the number of people who celebrate?
 ```{r}
 data %>% 
@@ -63,7 +62,6 @@ data %>%
   group_by(main_dish, main_prep, main_prep_other) %>%
   count(main_dish, sort=TRUE) %>%
   kable()
-
 ```
 
 ### 6. Create 3 different data viz showing insights for main dish served and the method.
@@ -180,8 +178,58 @@ new_data %>% pairwise_cor(value, id, sort = TRUE)
 ```{r}
 data %>%
   filter((celebrate=="Yes") & !is.na(family_income)) %>%
-    lm(family_income~community_type)
+  mutate(income_mean = summarise())
+  ggplot(aes(family_income, gender)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
 ```
+
+
+
+```{r}
+
+# create var family_income_num for LM 
+data1 <- data %>%
+  mutate(family_income_num=parse_number(as.character(family_income))) %>%
+  filter(!is.na(family_income_num))
+
+```
+
+```{r}
+library(randomForest)
+random_fr_1 <- randomForest(family_income_num~celebrate+main_dish+age,data=data1, na.action=na.omit)
+
+random_fr_2 <- randomForest(family_income_num~celebrate+us_region,data=data1, na.action=na.omit) 
+
+randomForest(family_income_num~celebrate+main_dish+main_prep+age,data=data1, na.action=na.omit) 
+
+summary(random_fr_2)
+
+```
+
+
+
+
+```{r}
+data %>%
+  filter((celebrate=="Yes") & !is.na(family_income) & !is.na(age)) %>%
+  mutate(family_income, parse_number(family_income), age, parse_number(age)) %>%
+  ggplot(aes(family_income, age)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+
+data %>%
+  filter((celebrate=="Yes") & !is.na(family_income) & !is.na(age)) %>%
+  summarise(family_income = mean(family_income, parse_number(family_income, na = c("Prefer not to answer")))) %>%
+  kable()
+  
+data <- data %>%
+  mutate(family_income = fct_reorder(family_income, parse_number(family_income, na = c("Prefer not to answer")))) 
+  
+```
+
 
 
 

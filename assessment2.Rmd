@@ -24,26 +24,36 @@ library(randomForest)# load randomForest library
 ```
 
 ### Insert an R chunk and create a dataset variable called `data`
+
 ```{r}
+# use readr function to import the and read data from csv
+# save data into dataset called "data"
 data <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-11-20/thanksgiving_meals.csv')
 ```
 
 ### Part 2: Data Wrangling and visualization 
 
 ### 1. Display the first 10 rows of the dataset using `kable()` function
+
 ```{r}
-# Show first 10 rows of the dataset and the first 5 variables using kabble() function
+# use kable function to read dataset and display first 10 rows and the first 5 variables
 kable((data[1:10, 1:5])) 
 ```
 
 ### 2. Using `skim()` display the summary of variables
+
+#### **Main observations:** 
+* Data missing from most variables and will need to be removed before using in later and calculations and visualizations
+* There are a large number of side, pie and dessert variables
+
 ```{r}
-# Pipe dataset into skim function to summarise a whole dataset
+# pipe dataset into skim function to summarize whole dataset
 data %>% 
   skim() 
 ```
 
 ### 3. Use `fct_reorder` and `parse_number` functions to create a factor variable `family_income`
+
 ```{r}
 # Pipe dataset into mutate and use fct_reorder to reorder factor levels by sorting with variable family_income and save back to dataset
 # Use parse_number function to drop any non-numeric characters before or after the first number in variable family_income
@@ -52,6 +62,10 @@ data <- data %>%
 ```
 
 ### 4. What is the number of people who celebrate?
+
+#### **Main observations:** 
+* 980 people celebrate thanksgiving
+
 ```{r}
 # Pipe dataset into count function and count variable celebrate (total how many yes / no answers) then
 # pipe into arrange function and arrange rows by variables celebrate in descending order then
@@ -63,8 +77,13 @@ data %>%
 ```
 
 ### 5. What are categories and insights for each main dish served and the method it is prepared?
+
+#### **Main observations:** 
+* Main dish categories include: Turkey, Ham/Pork, Roast beef, Tofurkey, Chicken, Turducken and Other/I dont know.
+* Main prep categories include: Baked, Roasted, Fried and Other/I dont know.
+
 ```{r}
-# Pipe dataset into filter function and remove all na obs from variable main_dish and main_prep then
+# pipe dataset into filter function and remove all na obs from variable main_dish and main_prep then
 # pipe into group_by function and select variable main_dish, main_prep and main_prep_other then
 # pipe into count function and count variable main_dish and sort in descending order then
 # pipe into kabble() function to create simple table with output
@@ -77,17 +96,25 @@ data %>%
 
 ### 6. Create 3 different data viz showing insights for main dish served and the method.
 
-#### Data viz 1 
-#### Shows the most prevalent main dish's served according to most prevalent preparation methods
-##### Most prevalent dish's served: 1. Turkey 2. Ham/Pork 3. Other 4.Tofurkey 5. Roast beef 6. Chicken
+#### **Data visualisation 1** 
+* Shows the most prevalent main dish's served according to most prevalent preparation methods
+* Most prevalent dish's served on thanksgiving are: 
+1. Turkey 
+2. Ham/Pork 
+3. Other 
+4. Tofurkey 
+5. Roast beef 
+6. Chicken
+
 ```{r}
-# Data viz 1
+# Data visualisation 1
 # pipe dataset into filter function and remove all na obs from variable main_dish then
 # pipe into mutate, select var main_dish and use fct_collapse to collapse 3 x obs into manually defined group "Other" then
 # pipe into mutate, select var main_prep and use fct_collapse to collapse 3 x obs into manually defined group "Other" then
 # pipe into ggplot, select discrete variable main_prep and use variable main_prep as color and fill in data viz then
 # add geom_bar and use facet_wrap to create 4 plots for variable main_dish and allow x scale to vary across rows then
 # add a label to the x axis and use coord_flip so that horizontal becomes vertical, and vertical, horizontal then
+# add theme "theme_minimal" which controls all non-data display
 data %>% 
   filter(!is.na(main_dish) & !is.na(main_prep)) %>%
   mutate(main_dish = fct_collapse(main_dish, Other = c("I don't know", "Other (please specify)", "Turducken"))) %>%
@@ -96,21 +123,27 @@ data %>%
   geom_bar()+ # add Bar charts using geom_bar
   facet_wrap(vars(main_dish), ncol = 3, scales = "free_x")+ 
   labs(x = "Method")+
-  coord_flip()
-
+  coord_flip() +
+  theme_minimal()
 ```
 
-#### Data viz 2 
-#### Shows the most prevalent preparation methods according to dish served
-##### Most prevalent preparation method: 1. Baked 2. Roasted 3. Other 4. Fried
+#### ***Data visualisation 2***
+* Shows the most prevalent preparation methods according to dish served
+* Most prevalent preparation methods on thanksgiving are:
+1. Baked 
+2. Roasted
+3. Other 
+4. Fried
+
 ```{r}
-# Data viz 2
+# Data visualisation 2
 # pipe dataset into filter function and remove all na obs from variable main_dish then
 # pipe into mutate, select var main_dish and use fct_collapse to collapse 3 x obs into manually defined group "Other" then
 # pipe into mutate, select var main_prep and use fct_collapse to collapse 3 x obs into manually defined group "Other" then
 # pipe into ggplot, select discrete variable main_prep and use variable main_prep as color and fill in data viz then
 # add geom_bar and use facet_wrap to create 2 plots for variable main_prep and allow x scale to vary across rows then
-# add a label to the x axis and use coord_flip so that horizontal becomes vertical, and vertical, horizontal
+# add a label to the x axis and use coord_flip so that horizontal becomes vertical, and vertical, horizontal then
+# add theme "theme_minimal" which controls all non-data display
 data %>%
   filter(!is.na(main_dish) & !is.na(main_prep)) %>%
   mutate(main_dish = fct_collapse(main_dish, Other = c("I don't know", "Other (please specify)", "Turducken"))) %>%
@@ -119,12 +152,17 @@ data %>%
   geom_bar()+
   facet_wrap(vars(main_prep), ncol = 2, scales = "free_x") +
   labs(x = "Dish served") +
-  coord_flip()
+  coord_flip()+
+  theme_minimal()
 ```
 
-#### Data viz 3 
-#### Shows the most prevalent preparation methods for Turkey by count
-##### Most prevalent preparation method for Turkey is: 1. Baked 2. Roasted 3. Other
+#### ***Data visualisation 3*** 
+* Shows the most prevalent preparation methods for Turkey by count
+* Most prevalent preparation methods for Turkey are:
+1. Baked 
+2. Roasted 
+3. Other
+
 ```{r}
 # Data viz 3
 # pipe dataset into filter function and remove all na obs from variable main_dish and main_prep then
@@ -132,7 +170,8 @@ data %>%
 # pipe into mutate, select var main_prep, use fct_lump to lumps together the least frequent levels, ensuring that "other" is still the smallest
 # pipe into ggplot, select discrete variable main_dish and use variable main_dish as color and fill in data viz then
 # add geom_bar and use facet_wrap to create 3 plots for variable main_prep then
-# add a label to the x axis and use theme function to remove legend
+# add a label to the x axis and use theme function to remove legend then
+# add theme "theme_minimal" which controls all non-data display
 data %>%
   filter(!is.na(main_dish) & !is.na(main_prep)) %>%
   mutate(main_dish = fct_lump_lowfreq(main_dish)) %>% # Use fct_lump to lump together all the small main_dish 
@@ -141,13 +180,19 @@ data %>%
   geom_bar()+
   facet_wrap(vars(main_prep), ncol = 3)+
   labs(x = "Dish served") +
-  theme(legend.position = "none")
+  theme(legend.position = "none")+
+  theme_minimal()
 ```
 
 
 ### 7. How many use cranberry sauce? How many use gravy?
 
+#### **Main observations:** 
+* 828 people use cranberry
+* 892 people use gravy
+
 #### Count of cranberry sauce use
+
 ```{r}
 # pipe dataset into filter function and remove all na obs from variable main_dish then
 # pipe into mutate, select var cranberry and use fct_collapse to collapse 2 x obs into manually defined groups "Yes / No" then
@@ -163,6 +208,7 @@ data %>%
 ```
 
 #### Count of gravy use
+
 ```{r}
 # pipe dataset into filter function and remove all na obs from variable main_dish then
 # pipe into count function and count variable gravy and sort in descending order then
@@ -175,31 +221,38 @@ data %>%
 
 ### 8. What is the distribution of those who celebrate across income ranges
 
-#### Main observation: High and low income earners are less likely to celebrate than middle to low income earners
+#### **Main observation:** 
+* High and low income earners are less likely to celebrate thanksgiving than middle to low income earners
+* The 25K to 124K income range is the most prevalent between people that celebrate thanksgiving
 
-##### Most prevalent income ranges for people that celebrate is:
-##### 1. $25K to $49K 
-##### 2. $50K to $74K and $75K to 99K 
-##### 3. $100K to 124K
 ```{r}
 # pipe dataset into filter function and select celebrate = yes, remove "prefer not to say" obs from variable family_income then
 # pipe into ggplot, select variable family_income and use variable family_income as color and fill in data viz then
 # add geom_bar and use labs function to add a label to the x and y axis then 
 # use coord_flip so that horizontal becomes vertical, and vertical, horizontal then 
 # use theme function to remove legend
+# add theme "theme_minimal" which controls all non-data display
 data %>%
   filter((celebrate=="Yes") & family_income != "Prefer not to answer") %>% 
   ggplot(aes(family_income,color=family_income,fill = family_income))+
   geom_bar()+
   labs(x = "Income ranges", y = "Distribution") +
   coord_flip()+
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  theme_minimal()
 ```
 
 ### 10. Use the following code to create a new data 
 
-```{r}
+##### Create new dataset that contans the different groups of type side dish by id
 
+```{r}
+# pipe dataset into select function and select id and any obs that stats with side. pie, dessert then
+# pipe into select function to remove variables side15, pie13, desert12 then
+# pipe into gather function to gather into key-values pairs by id then and create new columns "type" and  "vaule" then
+# pipe dataset into filter function and remove all na, "none" and "Other not to say" obs then
+# pipe into mutate function and use str_remove function to remove ""\\d+" from type column  
+# create new dataset "new_data" to assign output back into 
 new_data <- data %>%
   select(id, starts_with("side"),
          starts_with("pie"),
@@ -212,73 +265,68 @@ new_data <- data %>%
 ```
 
 ### 11. Intall package `widyr` and use `pairwise_cor()` function
+
+#### **Main observation:** 
+* Cookies and Brownies have the highest correlation (0.41) 
+
 ```{r}
-install.packages("widyr")
+# download and install "widyr" package from CRAN repositories then
+# install packages once via console using - install.packages("widyr")
+# load library "widyr" using library(widyr)
+# pipe "new_data" into pairwise_cor function to identify groups of highly correlated items "value and id" and sort in descending order
+
+# install.packages("widyr")
 library(widyr)
 
 new_data %>% pairwise_cor(value, id, sort = TRUE)
 ```
 
-### 13. Use `lm()` or randomForest() function to build a model that predict a family income based on data in the dataset.
+### 13. Use `lm()` or `randomForest()` function to build a model that predict a family income based on data in the dataset.
+
+#### **Main observation:** What America eats on thanksgiving is a poor indicator to predict family income.
+
+1. Model 3 showed the highest relationship (~9%) between age, work and comunity type based variables and family income.
+2. Model 2 showed a (~7.5%) relationship between age and location based variables and family income.
+3. Model 1 showed a (~6%) relationship between food based variables and family income
+
+##### Remove any non-numeric characters and na obs from variable "family_income" and save to new variable "family_income_num".
 
 ```{r}
-
-# create var family_income_num for LM 
+# pipe dataset into mutate and use parse_number function to drop any non-numeric characters before or after the first number in variable family_income and create new column family_income_num to save output then
+# pipe dataset into filter function and remove all na obs from variable family_income_num then
+# create new dataset "data1" to assign output back into data1
 data1 <- data %>%
   mutate(family_income_num=parse_number(as.character(family_income))) %>%
   filter(!is.na(family_income_num))
-
 ```
+
+##### Model 1:  Food based regression model 
+* Shows a low relationship (~6%) between food based variables and family income.
+* Based on a forest of trees using random inputs from celebrate, main_dish, main_prep, and age.
 
 ```{r}
-
-#food based
-random_fr_1 <- randomForest(family_income_num~celebrate+main_dish+main_prep+age,data=data1, na.action=na.omit)
-
-#work location based
-random_fr_2 <- randomForest(family_income_num~age+community_type+us_region,data=data1, na.action=na.omit)
-
-#work and community based
-random_fr_3 <- randomForest(family_income_num~age+work_retail+community_type,data=data1, na.action=na.omit)
-
+# download and install "randomForest" package from CRAN repositories then
+# install packages once via console using - install.packages("randomForest")
+# use randomForest function to predict correlation of celebrate, main_dish, main_prep, age to family_income_num and remove "na" obs from data
+randomForest(family_income_num~celebrate+main_dish+main_prep+age,data=data1, na.action=na.omit)
 ```
 
-
-
-
-
-
+##### Model 2:  Work and location based regression model 
+* Shows a low relationship (~7.5%) between age and location based variables and family income.
+* Based on a forest of trees using random inputs from age, community_type, us_region.
 
 ```{r}
-data %>%
-  filter((celebrate=="Yes") & !is.na(family_income) & !is.na(age)) %>%
-  mutate(family_income, parse_number(family_income), age, parse_number(age)) %>%
-  ggplot(aes(family_income, age)) +
-  geom_point() +
-  geom_smooth(method = "lm")
-
-
-data %>%
-  filter((celebrate=="Yes") & !is.na(family_income) & !is.na(age)) %>%
-  summarise(family_income = mean(family_income, parse_number(family_income, na = c("Prefer not to answer")))) %>%
-  kable()
-  
-data <- data %>%
-  mutate(family_income = fct_reorder(family_income, parse_number(family_income, na = c("Prefer not to answer")))) 
-  
+# use randomForest function to predict correlation of age, community_type and us_region to family_income_num and remove "na" obs from data
+randomForest(family_income_num~age+community_type+us_region,data=data1, na.action=na.omit)
 ```
 
-
-
+##### Model 3:  Work type and community based regression model 
+* Shows a low relationship (~9%) between age, work and comunity type based variables and family income. 
+* Based on a forest of trees using random inputs from age, work_retail and community_type.
 
 ```{r}
-data %>%
-  filter(!is.na(main_dish)) %>%
-  mutate(main_dish = fct_collapse(main_dish,
-                                  Other = c("I don't know", "Other (please specify)")
-  )) %>%
-  count(main_dish,main_dish_other, sort = TRUE)
+# use randomForest function to predict correlation of age, community_type and us_region to family_income_num and remove "na" obs from data
+randomForest(family_income_num~age+work_retail+community_type,data=data1, na.action=na.omit)
 ```
-
 
 
